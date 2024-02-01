@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    #container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #placeholder {
+      position: relative;
+      display: inline-block;
+      overflow: hidden; /* Prevent small box from going outside placeholder */
+    }
+
+    #smallBox {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border: 1px solid black;
+    }
+
+    #copyBox {
+      width: 100px;
+      height: 100px;
+      border: 1px solid black;
+      margin-left: 10px; /* Adjust as needed */
+      background-repeat: no-repeat;
+      background-size: 100% 100%;     transform: scale(5);/* Full size */
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <div id="placeholder">
+    <img src="https://i.imgur.com/HtgBy4K.jpg" alt="Placeholder Image" id="mainImage" style="max-width: 100%;">
+
+    <div id="smallBox"></div>
+  </div>
+
+  <div id="copyBox"></div>
+</div>
+
+<script>
+  const placeholder = document.getElementById('placeholder');
+  const mainImage = document.getElementById('mainImage');
+  const smallBox = document.getElementById('smallBox');
+  const copyBox = document.getElementById('copyBox');
+
+  placeholder.addEventListener('mousemove', updateSmallBox);
+
+  function updateSmallBox(event) {
+    const rect = mainImage.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const clampedX = clamp(x - smallBox.offsetWidth / 2, 0, rect.width - smallBox.offsetWidth);
+    const clampedY = clamp(y - smallBox.offsetHeight / 2, 0, rect.height - smallBox.offsetHeight);
+
+    smallBox.style.left = clampedX + 'px';
+    smallBox.style.top = clampedY + 'px';
+
+    const scaleX = mainImage.width / rect.width;
+    const scaleY = mainImage.height / rect.height;
+
+    const smallBoxWidth = 30;
+    const smallBoxHeight = 30;
+
+    const copyX = (clampedX / rect.width) * mainImage.width;
+    const copyY = (clampedY / rect.height) * mainImage.height;
+
+    copyBox.style.backgroundImage = `url('${mainImage.src}')`;
+    copyBox.style.backgroundSize = `${mainImage.width}px ${mainImage.height}px`;
+    copyBox.style.backgroundPosition = `-${copyX}px -${copyY}px`;
+    copyBox.style.width = smallBoxWidth * scaleX + 'px';
+    copyBox.style.height = smallBoxHeight * scaleY + 'px';
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+</script>
+
+</body>
+</html>
